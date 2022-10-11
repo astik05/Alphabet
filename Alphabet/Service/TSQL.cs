@@ -4,6 +4,8 @@ using System.Data;
 using System.Collections;
 using System.Windows.Forms;
 
+using Alphabet.Model;
+
 namespace Alphabet.Service
 {
     internal class Connection
@@ -100,6 +102,11 @@ namespace Alphabet.Service
         protected virtual void CreateSqlCommand()
         {
 
+        }
+
+        public DataTable GetTableResult()
+        {
+            return _tableResult;
         }
 
         public string ParseTableResult(int idRow, string nameColumn)
@@ -551,6 +558,79 @@ namespace Alphabet.Service
             _sqlCommand.Parameters.AddWithValue("@Additionally", _person.Additionally == null ? (object)DBNull.Value : _person.Additionally);
             _sqlCommand.Parameters.AddWithValue("@PlaceOfBirth", _person.PlaceOfBirth == null ? (object)DBNull.Value : _person.PlaceOfBirth);
             _sqlCommand.Parameters.AddWithValue("@IdPerson", 0).Direction = ParameterDirection.Output;
+        }
+    }
+
+    class SelectMarks : BaseQuery
+    {
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "SelectMarks";
+        }
+    }
+
+    class SelectCountries : BaseQuery
+    {
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "SelectCountries";
+        }
+    }
+
+    class SelectUsersLogin : BaseQuery
+    {
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "SelectUsersLogin";
+        }
+    }
+
+    class FindPersons : BaseQuery
+    {
+        private string _filters;
+
+        public FindPersons(string filters)
+        {
+            _filters = filters;
+        }
+
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandTimeout = 86400;
+            _sqlCommand.CommandType = CommandType.Text;
+            _sqlCommand.CommandText = @"
+select p.Id, p.IsDeleted [Снят], p.FIO [ФИО], p.DateOfBirth [Дата рождения], m.Name [Отметка], t.Number [Номер телеграммы], t.DateOfSigning [Дата подписания],
+p.DateExpire [Срок контроля], p.Task [Задание], us.FIO [Пользователь] from Person p
+inner join TelegramPerson pt on pt.IdPerson=p.Id
+inner join Telegram t on t.Id=pt.IdTelegram  
+inner join [Mark] m on m.Id=p.IdMark 
+inner join UserAction u on u.IdPerson = p.Id
+inner join [User] us on us.Id=u.IdUser " + (string.IsNullOrWhiteSpace(_filters) ? "" : _filters.Trim().Insert(0, "where").Replace("whereand", "where")) +
+@" group by  p.Id, p.IsDeleted  , p.FIO  , p.DateOfBirth , m.Name , t.Number , t.DateOfSigning ,
+p.DateExpire  , p.Task , us.FIO ";
         }
     }
 }

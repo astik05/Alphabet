@@ -1,4 +1,4 @@
-﻿namespace EditingRegistrationApp
+﻿namespace Alphabet
 {
     partial class EditForm
     {
@@ -97,7 +97,7 @@
             // 
             this.tbNumber.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbNumber.Location = new System.Drawing.Point(9, 39);
-            this.tbNumber.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbNumber.Margin = new System.Windows.Forms.Padding(4);
             this.tbNumber.MaxLength = 6;
             this.tbNumber.Name = "tbNumber";
             this.tbNumber.Size = new System.Drawing.Size(199, 30);
@@ -110,7 +110,7 @@
             this.dtDate.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.dtDate.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtDate.Location = new System.Drawing.Point(8, 43);
-            this.dtDate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dtDate.Margin = new System.Windows.Forms.Padding(4);
             this.dtDate.Name = "dtDate";
             this.dtDate.Size = new System.Drawing.Size(203, 30);
             this.dtDate.TabIndex = 2;
@@ -136,7 +136,7 @@
             this.dgvList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvList.ContextMenuStrip = this.cmsList;
             this.dgvList.Location = new System.Drawing.Point(16, 150);
-            this.dgvList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvList.Margin = new System.Windows.Forms.Padding(4);
             this.dgvList.MultiSelect = false;
             this.dgvList.Name = "dgvList";
             this.dgvList.RowHeadersWidth = 51;
@@ -167,7 +167,7 @@
             this.bProcess.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.bProcess.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.bProcess.Location = new System.Drawing.Point(701, 613);
-            this.bProcess.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bProcess.Margin = new System.Windows.Forms.Padding(4);
             this.bProcess.Name = "bProcess";
             this.bProcess.Size = new System.Drawing.Size(231, 46);
             this.bProcess.TabIndex = 7;
@@ -197,7 +197,7 @@
             this.dgvAdd.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvAdd.ContextMenuStrip = this.cmsAdd;
             this.dgvAdd.Location = new System.Drawing.Point(177, 428);
-            this.dgvAdd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.dgvAdd.Margin = new System.Windows.Forms.Padding(4);
             this.dgvAdd.MultiSelect = false;
             this.dgvAdd.Name = "dgvAdd";
             this.dgvAdd.RowHeadersWidth = 51;
@@ -239,7 +239,7 @@
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar1.Location = new System.Drawing.Point(16, 667);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(1561, 28);
             this.progressBar1.TabIndex = 14;
@@ -309,7 +309,7 @@
             this.rbAdd.AutoSize = true;
             this.rbAdd.Font = new System.Drawing.Font("Arial", 12F);
             this.rbAdd.Location = new System.Drawing.Point(15, 31);
-            this.rbAdd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rbAdd.Margin = new System.Windows.Forms.Padding(4);
             this.rbAdd.Name = "rbAdd";
             this.rbAdd.Size = new System.Drawing.Size(137, 27);
             this.rbAdd.TabIndex = 22;
@@ -323,7 +323,7 @@
             this.rbDel.Checked = true;
             this.rbDel.Font = new System.Drawing.Font("Arial", 12F);
             this.rbDel.Location = new System.Drawing.Point(15, 65);
-            this.rbDel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rbDel.Margin = new System.Windows.Forms.Padding(4);
             this.rbDel.Name = "rbDel";
             this.rbDel.Size = new System.Drawing.Size(96, 27);
             this.rbDel.TabIndex = 23;
@@ -339,9 +339,9 @@
             this.groupBox1.Controls.Add(this.rbAdd);
             this.groupBox1.Font = new System.Drawing.Font("Arial", 12F);
             this.groupBox1.Location = new System.Drawing.Point(1051, 38);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox1.Size = new System.Drawing.Size(180, 105);
             this.groupBox1.TabIndex = 24;
             this.groupBox1.TabStop = false;
@@ -529,9 +529,9 @@
             this.groupBox2.Controls.Add(this.tbNumber);
             this.groupBox2.Font = new System.Drawing.Font("Arial", 12F);
             this.groupBox2.Location = new System.Drawing.Point(343, 42);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox2.Size = new System.Drawing.Size(220, 101);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
@@ -543,9 +543,9 @@
             this.groupBox3.Controls.Add(this.dtDate);
             this.groupBox3.Font = new System.Drawing.Font("Arial", 12F);
             this.groupBox3.Location = new System.Drawing.Point(592, 38);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox3.Size = new System.Drawing.Size(220, 105);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
@@ -558,9 +558,9 @@
             this.groupBox4.Controls.Add(this.rbIn);
             this.groupBox4.Font = new System.Drawing.Font("Arial", 12F);
             this.groupBox4.Location = new System.Drawing.Point(841, 38);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(180, 105);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
@@ -571,7 +571,7 @@
             this.rbOut.AutoSize = true;
             this.rbOut.Font = new System.Drawing.Font("Arial", 12F);
             this.rbOut.Location = new System.Drawing.Point(36, 65);
-            this.rbOut.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rbOut.Margin = new System.Windows.Forms.Padding(4);
             this.rbOut.Name = "rbOut";
             this.rbOut.Size = new System.Drawing.Size(90, 27);
             this.rbOut.TabIndex = 23;
@@ -585,7 +585,7 @@
             this.rbIn.Checked = true;
             this.rbIn.Font = new System.Drawing.Font("Arial", 12F);
             this.rbIn.Location = new System.Drawing.Point(36, 31);
-            this.rbIn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rbIn.Margin = new System.Windows.Forms.Padding(4);
             this.rbIn.Name = "rbIn";
             this.rbIn.Size = new System.Drawing.Size(89, 27);
             this.rbIn.TabIndex = 22;
@@ -603,9 +603,9 @@
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Font = new System.Drawing.Font("Arial", 12F);
             this.groupBox5.Location = new System.Drawing.Point(1299, 38);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox5.Size = new System.Drawing.Size(279, 105);
             this.groupBox5.TabIndex = 29;
             this.groupBox5.TabStop = false;
@@ -615,7 +615,7 @@
             // 
             this.button1.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.button1.Location = new System.Drawing.Point(20, 103);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(27, 32);
             this.button1.TabIndex = 30;
@@ -645,7 +645,7 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "EditForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

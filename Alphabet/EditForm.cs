@@ -12,10 +12,11 @@ using System.Threading;
 using System.Security.Principal;
 
 using Alphabet.View;
+using Alphabet.View.PersonsOperations;
 
-namespace EditingRegistrationApp
+namespace Alphabet
 {
-    public partial class EditForm : Form, IPersonsOpearationsView
+    public partial class EditForm : Form, IPersonsAddOrDeleteView
     {
         public static EditForm Instance { get; set; }
         private int _idTelegram;

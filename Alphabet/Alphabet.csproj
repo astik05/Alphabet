@@ -89,6 +89,12 @@
     <Compile Include="Model\Person.cs" />
     <Compile Include="Presenter\AuthorizationPresenter.cs" />
     <Compile Include="Presenter\PersonsOpearationsPresenter.cs" />
+    <Compile Include="SearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchForm.Designer.cs">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Service\ARM.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Model\UserSessions.cs" />
@@ -108,7 +114,9 @@
     <Compile Include="View\AdministratorViews\IAdministratorView.cs" />
     <Compile Include="View\IAuthorizationView.cs" />
     <Compile Include="View\IBaseVIew.cs" />
-    <Compile Include="View\IPersonsOpearationsView.cs" />
+    <Compile Include="View\PersonsOperations\IPersonsOperationsView.cs" />
+    <Compile Include="View\PersonsOperations\IPersonsAddOrDeleteView.cs" />
+    <Compile Include="View\PersonsOperations\IPersonsSelectView.cs" />
     <Compile Include="View\IUserSessionsView.cs" />
     <Compile Include="View\AdministratorViews\ISharedAdministratorView.cs" />
     <EmbeddedResource Include="EditForm.resx">
@@ -136,6 +144,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="SearchForm.resx">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -10,6 +10,10 @@ namespace Alphabet.Service
             {
                 case ARMAdministrator.Name:
                     return new ARMAdministrator();
+                case ARMFindPersons.Name:
+                    return new ARMFindPersons();
+                case ARMAddOrDeletePersons.Name:
+                    return new ARMAddOrDeletePersons();
                 default:
                     return new ARM();
             }
@@ -23,11 +27,31 @@ namespace Alphabet.Service
 
     class ARMAdministrator : ARM
     {
-        public const string Name = "АРМ Администратора";
+        public const string Name = "АРМ администратора";
 
         public ARMAdministrator()
         {
             ARMForm = new FormAdministrator();
+        }
+    }
+
+    class ARMFindPersons : ARM
+    {
+        public const string Name = "АРМ поиска лиц";
+
+        public ARMFindPersons()
+        {
+            ARMForm = new SearchForm();
+        }
+    }
+
+    class ARMAddOrDeletePersons : ARM
+    {
+        public const string Name = "АРМ постановки/снятия";
+
+        public ARMAddOrDeletePersons()
+        {
+            ARMForm = new EditForm();
         }
     }
 }
