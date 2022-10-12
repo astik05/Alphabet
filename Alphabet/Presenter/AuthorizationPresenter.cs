@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 using Alphabet.Model;
 using Alphabet.View;
@@ -32,44 +33,52 @@ namespace Alphabet.Presenter
             _authorizationView.LoadEventHandler += CheckingConnectionToDB;
         }
 
-        public void CheckingConnectionToDB()
+        public async void CheckingConnectionToDB()
         {
-            Color backColor = Color.FromArgb(192, 255, 192);
-            try
+            await Task.Run(() =>
             {
-                var checkConnection = new CheckConnection();
-                checkConnection.Execute();
-            }
-            catch (Exception exception)
-            {
-                backColor = Color.FromArgb(255, 192, 192);
-            }
-            finally
-            {
-                Connection.Instance.CloseConnection();
-                _authorizationView.SetColorChekingConnection(backColor);
-            }
+                Color backColor = Color.FromArgb(192, 255, 192);
+                try
+                {
+                    var checkConnection = new CheckConnection();
+                    checkConnection.Execute();
+                }
+                catch (Exception exception)
+                {
+                    backColor = Color.FromArgb(255, 192, 192);
+                }
+                finally
+                {
+                    Connection.Instance.CloseConnection();
+                    _authorizationView.SetColorChekingConnection(backColor);
+                }
+            });
         }
 
-        private void OnLoadingForm()
+        private async void OnLoadingForm()
         {
-            Logger.Writer(new SQLWriteSystemLogger(
-                new AttributeSystemLog() 
-                { 
-                    DateTimeCreate = DateTime.Now, LevelMessage = "Info", Message = "Загрузка основной формы" 
-                }));
-
-            var managerAD = new ManagerAD();
-            var domains = managerAD.GetAllDomain();
-            string[] domainsName = new string[managerAD.CountDomains() + 1];
-            int count = 0;
-            foreach (var domain in domains)
+            await Task.Run(() =>
             {
-                domainsName[count] = domain.ToString();
-                ++count;
-            }
-            domainsName[domainsName.Count() - 1] = "Нет домена";
-            _authorizationView.UpdateComBoxDomains(domainsName);
+                Logger.Writer(new SQLWriteSystemLogger(
+                    new AttributeSystemLog()
+                    {
+                        DateTimeCreate = DateTime.Now,
+                        LevelMessage = "Info",
+                        Message = "Загрузка основной формы"
+                    }));
+
+                var managerAD = new ManagerAD();
+                var domains = managerAD.GetAllDomain();
+                string[] domainsName = new string[managerAD.CountDomains() + 1];
+                int count = 0;
+                foreach (var domain in domains)
+                {
+                    domainsName[count] = domain.ToString();
+                    ++count;
+                }
+                domainsName[domainsName.Count() - 1] = "Нет домена";
+                _authorizationView.UpdateComBoxDomains(domainsName);
+            });
         }
 
         private void OnAuthorization()
@@ -88,6 +97,7 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
+                Connection.Instance.CloseConnection();
                 Logger.Writer(new SQLWriteSystemLogger(
                     new AttributeSystemLog() 
                     { 
@@ -148,6 +158,7 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
+                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка авторизации пользователя " + userName + "! " + exception.ToString();
             }

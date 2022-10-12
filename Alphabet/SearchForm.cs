@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Alphabet.View.PersonsOperations;
 using Alphabet.Presenter;
 using Alphabet.Model;
+using Alphabet.Service;
 
 namespace Alphabet
 {
@@ -98,6 +99,17 @@ namespace Alphabet
         private void checkBoxCheckedChanged(object sender, EventArgs e)
         {
             SelectFilter(sender);
+        }
+
+        private void SearchForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Logger.Writer(new SQLWriteSystemLogger(
+                new AttributeSystemLog()
+                {
+                    DateTimeCreate = DateTime.Now,
+                    LevelMessage = "Info",
+                    Message = "Завершение работы в АРМе поиск лица."
+                }));
         }
     }
 }

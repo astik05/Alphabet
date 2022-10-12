@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using Alphabet.View;
 using Alphabet.View.PersonsOperations;
 using Alphabet.Service;
+using Alphabet.Presenter;
+using Alphabet.Model;
 
 namespace Alphabet
 {
@@ -22,13 +24,13 @@ namespace Alphabet
 
         public event Action<int> GetPersonDTEventHandler;
 
-        public event Action ClosingFormEventHandler;
-
         public event Action<int, int> ChangeBorderRoutingEventHandler;
 
         public EditForm()
         {
             InitializeComponent();
+
+            new PersonsOpearationsPresenter(new Person(), this);
         }
 
         public DialogResult ShowMessageBox(string message, string title, MessageBoxButtons button, MessageBoxIcon icon)

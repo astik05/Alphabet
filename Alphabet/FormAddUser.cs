@@ -36,7 +36,7 @@ namespace Alphabet
 
         public void ViewAllUserGroup(string[] allUserGroup)
         {
-            cBoxUserGroup.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
                 {
                     cBoxUserGroup.Items.Clear();
                     cBoxUserGroup.Items.Remove(cBoxUserGroup.Text);
@@ -54,7 +54,7 @@ namespace Alphabet
 
         public void ViewAllUsersFromAD(string[] allUser)
         {
-            cBoxLogin.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
             {
                 cBoxLogin.Items.Clear();
                 cBoxLogin.Items.Remove(cBoxUserGroup.Text);
@@ -64,7 +64,10 @@ namespace Alphabet
 
         public void ShowMessageBox(string text, string title, MessageBoxButtons button, MessageBoxIcon icon)
         {
-            MessageBox.Show(text, title, button, icon);
+            Invoke((MethodInvoker)(() =>
+            {
+                MessageBox.Show(text, title, button, icon);
+            }));
         }
 
         private void cBoxUserGroup_DropDown(object sender, EventArgs e)

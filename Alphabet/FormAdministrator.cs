@@ -47,7 +47,10 @@ namespace Alphabet
 
         public void ShowMessageBox(string text, string title, MessageBoxButtons button, MessageBoxIcon icon)
         {
-            MessageBox.Show(text, title, button, icon);
+            Invoke((MethodInvoker)(() =>
+            {
+                MessageBox.Show(text, title, button, icon);
+            }));
         }
 
         private void panelUsers_MouseEnter(object sender, EventArgs e)
@@ -111,7 +114,7 @@ namespace Alphabet
 
         public void UpdateListView(ListView listView, ColumnHeader[] columns, ListViewItem[] rows)
         {
-            listView.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
             {
                 listView.Items.Clear();
                 listView.Columns.Clear();
@@ -139,25 +142,26 @@ namespace Alphabet
 
         public void ViewDataSelectedUser()
         {
-            tBoxFIO.Text = ViewFIO;
-            tBoxLogin.Text = ViewLogin;
-            cBoxUserGroup.Items.Clear();
-            cBoxUserGroup.Items.Add(ViewUserGroup);
-            cBoxUserGroup.Text = ViewUserGroup;
-            chBoxIsDeleteUser.Checked = ViewIsDeleteed;
+            Invoke((MethodInvoker)(() =>
+            {
+                tBoxFIO.Text = ViewFIO;
+                tBoxLogin.Text = ViewLogin;
+                cBoxUserGroup.Text = ViewUserGroup;
+                chBoxIsDeleteUser.Checked = ViewIsDeleteed;
+            }));
         }
 
         private void ClearViewDataSelectedUser()
         {
             tBoxFIO.Clear();
             tBoxLogin.Clear();
-            cBoxUserGroup.Items.Clear();
+            cBoxUserGroup.Text = "";
             chBoxIsDeleteUser.Checked = false;
         }
 
         public void ViewAllUserGroup(string[] allUserGroup)
         {
-            cBoxUserGroup.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
                 {
                     cBoxUserGroup.Items.Clear();
                     cBoxUserGroup.Items.Remove(cBoxUserGroup.Text);
@@ -167,7 +171,7 @@ namespace Alphabet
 
         public void UpdateComboBox(ComboBox cBox, string[] rows)
         {
-            cBox.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
             {
                 cBox.Items.Clear();
                 cBox.Items.AddRange(rows);
@@ -177,7 +181,7 @@ namespace Alphabet
 
         private void btnSaveEdetedUser_Click(object sender, EventArgs e)
         {
-            if (cBoxUserGroup.Text.Length != 0)
+            if (tBoxLogin.Text.Length != 0 && cBoxUserGroup.Text.Length != 0)
             {
                 ViewLogin = tBoxLogin.Text;
                 ViewUserGroup = cBoxUserGroup.Text;
@@ -185,7 +189,7 @@ namespace Alphabet
                 EditUserEventHandler.Invoke(ViewDataUsers);
             }
             else
-                ShowMessageBox("Выберите группу прав для пользователя!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                ShowMessageBox("Выберите пользователя и группу прав для пользователя!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         private void ViewDataUsers_ColumnClick(object sender, ColumnClickEventArgs e)

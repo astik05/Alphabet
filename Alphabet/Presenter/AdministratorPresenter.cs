@@ -90,82 +90,91 @@ namespace Alphabet.Presenter
             });
         }
 
-        private void Adding()
+        private async void Adding()
         {
             string levelMessage = "Info";
             string message = string.Empty;
-            try
-            {
-                if (_addUserView.ViewLogin.Length != 0 && _addUserView.ViewUserGroup.Length != 0)
-                {
-                    var addUser = new AddUser(_addUserView.ViewLogin, _addUserView.ViewUserGroup);
-                    addUser.Execute();
 
-                    var nameColumn = addUser.GetNameColumn(0);
-                    if (nameColumn == "Error")
+            await Task.Run(() =>
+            {
+                try
+                {
+                    if (_addUserView.ViewLogin.Length != 0 && _addUserView.ViewUserGroup.Length != 0)
                     {
-                        var messageSql = addUser.ParseTableResult(0, 0);
-                        message = messageSql;
-                        _addUserView.ShowMessageBox(messageSql, "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        var addUser = new AddUser(_addUserView.ViewLogin, _addUserView.ViewUserGroup);
+                        addUser.Execute();
+
+                        var nameColumn = addUser.GetNameColumn(0);
+                        if (nameColumn == "Error")
+                        {
+                            var messageSql = addUser.ParseTableResult(0, 0);
+                            message = messageSql;
+                            _addUserView.ShowMessageBox(messageSql, "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        else
+                        {
+                            message = "Пользователь успешно добавлен! " + addUser.ParseTableResult(0, 0);
+                            _addUserView.ShowMessageBox("Пользователь успешно добавлен!", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+
+                        levelMessage = "Info";
                     }
                     else
-                    {
-                        message = "Пользователь успешно добавлен! " + addUser.ParseTableResult(0, 0);
-                        _addUserView.ShowMessageBox("Пользователь успешно добавлен!", "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-
-                    levelMessage = "Info";
+                        _addUserView.ShowMessageBox("Заполните все поля!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
-                else
-                    _addUserView.ShowMessageBox("Заполните все поля!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-            catch (Exception exception)
-            {
-                levelMessage = "Error";
-                message = "Ошибка выполнения процедуры добавления " + _administratorView.ViewLogin + " пользователя! " + exception.ToString();
-            }
-            finally
-            {
-                Logger.Writer(new SQLWriteSystemLogger(
-                    new AttributeSystemLog()
-                    {
-                        DateTimeCreate = DateTime.Now,
-                        LevelMessage = levelMessage,
-                        Message = message
-                    }));
-            }
+                catch (Exception exception)
+                {
+                    Connection.Instance.CloseConnection();
+                    levelMessage = "Error";
+                    message = "Ошибка выполнения процедуры добавления " + _administratorView.ViewLogin + " пользователя! " + exception.ToString();
+                }
+                finally
+                {
+                    Logger.Writer(new SQLWriteSystemLogger(
+                        new AttributeSystemLog()
+                        {
+                            DateTimeCreate = DateTime.Now,
+                            LevelMessage = levelMessage,
+                            Message = message
+                        }));
+                }
+            });
         }
 
-        private void EdetingUser(ListView listView)
+        private async void EdetingUser(ListView listView)
         {
             string levelMessage = "Info";
             string message = string.Empty;
-            try
+            await Task.Run(() =>
             {
-                var edetingUser = new EditUser(_administratorView.ViewLogin, _administratorView.ViewIsDeleteed, _administratorView.ViewUserGroup);
-                edetingUser.Execute();
+                try
+                {
+                    var edetingUser = new EditUser(_administratorView.ViewLogin, _administratorView.ViewIsDeleteed, _administratorView.ViewUserGroup);
+                    edetingUser.Execute();
 
-                levelMessage = "Info";
-                message = edetingUser.ParseTableResult(0, 0);
-                _administratorView.ShowMessageBox(message, "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                OnViewAllUsers(listView);
-            }
-            catch (Exception exception)
-            {
-                levelMessage = "Error";
-                message = "Ошибка выполнения процедуры изменения данных " + _administratorView.ViewLogin + " пользователя! " + exception.ToString();
-                _administratorView.ShowMessageBox(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                Logger.Writer(new SQLWriteSystemLogger(
-                    new AttributeSystemLog()
-                    {
-                        DateTimeCreate = DateTime.Now,
-                        LevelMessage = levelMessage,
-                        Message = message
-                    }));
-            }
+                    levelMessage = "Info";
+                    message = edetingUser.ParseTableResult(0, 0);
+                    _administratorView.ShowMessageBox(message, "Выполнено", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    OnViewAllUsers(listView);
+                }
+                catch (Exception exception)
+                {
+                    Connection.Instance.CloseConnection();
+                    levelMessage = "Error";
+                    message = "Ошибка выполнения процедуры изменения данных " + _administratorView.ViewLogin + " пользователя! " + exception.ToString();
+                    _administratorView.ShowMessageBox(exception.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Logger.Writer(new SQLWriteSystemLogger(
+                        new AttributeSystemLog()
+                        {
+                            DateTimeCreate = DateTime.Now,
+                            LevelMessage = levelMessage,
+                            Message = message
+                        }));
+                }
+            });
         }
 
         private async void OnSelectAllUserGroup(ISharedAdministratorView allUsersView)
@@ -188,6 +197,7 @@ namespace Alphabet.Presenter
                     }
                     catch (Exception exception)
                     {
+                        Connection.Instance.CloseConnection();
                         Logger.Writer(new SQLWriteSystemLogger(
                             new AttributeSystemLog()
                             {
@@ -254,6 +264,7 @@ namespace Alphabet.Presenter
                 }
                 catch (Exception exception)
                 {
+                    Connection.Instance.CloseConnection();
                     levelMessage = "Error";
                     message = "Ошибка выполнения процедуры просмотра всех пользователей! " + exception.ToString();
                 }
@@ -342,6 +353,7 @@ namespace Alphabet.Presenter
                 }
                 catch (Exception exception)
                 {
+                    Connection.Instance.CloseConnection();
                     levelMessage = "Error";
                     message = messageError + exception.ToString();
                 }
@@ -405,6 +417,7 @@ namespace Alphabet.Presenter
                 }
                 catch (Exception exception)
                 {
+                    Connection.Instance.CloseConnection();
                     Logger.Writer(new SQLWriteSystemLogger(
                         new AttributeSystemLog()
                         {

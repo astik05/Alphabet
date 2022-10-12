@@ -73,20 +73,8 @@ namespace Alphabet.Presenter
                     var permissionARMs = new SelectPermissionARMs(login);
                     permissionARMs.Execute();
 
-
                     List<ARM> arms = new List<ARM>();
                     ViewPermissionARMs(arms , permissionARMs);
-                    //var storagePanelsARMs = new StoragePanelsARMs();
-
-                    //foreach (DataRow permissionARM in permissionARMs.ParseTableResult())
-                    //{
-                    //    var nameARM = permissionARM.ItemArray[0].ToString();
-                    //    var arm = ARMManager.EnterARM(nameARM);
-                    //    arms.Add(arm);
-
-                    //    storagePanelsARMs.AddItem(new PanelARM() { Arm = arm, ARMName = nameARM });
-                    //}
-                    //storagePanelsARMs.SetParent(_userSessionsView.ParentGroundOfARMs);
 
                     UserSessions.Instance.IsOpen = true;
                     UserSessions.Instance.User = new User()
@@ -106,6 +94,7 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
+                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка открытия сессии пользователя! " + exception.ToString();
             }
@@ -161,6 +150,7 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
+                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка закрытия сессии пользователя! " + exception.ToString();
             }

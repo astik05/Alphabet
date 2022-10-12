@@ -41,31 +41,46 @@ namespace Alphabet
 
         public void ShowMessageBox(string text, string title, MessageBoxButtons button, MessageBoxIcon icon)
         {
-            MessageBox.Show(text, title, button, icon);
+            Invoke((MethodInvoker)(() =>
+            {
+                MessageBox.Show(text, title, button, icon);
+            }));
         }
 
         public void ViewSessionStatus(Image image, string nameGroup, Color colorBackground)
         {
-            pBoxIconUsers.Image = image;
-            labelNameUsersGroup.Text = nameGroup;
-            pBoxIconUsers.BackColor = colorBackground;
+            Invoke((MethodInvoker)(() =>
+            {
+                pBoxIconUsers.Image = image;
+                labelNameUsersGroup.Text = nameGroup;
+                pBoxIconUsers.BackColor = colorBackground;
+            }));
         }
 
         public void ChangeStateBaseButton(Color color)
         {
-            OldColor = pBoxIconUsers.BackColor;
-            pBoxIconUsers.BackColor = color;
+            Invoke((MethodInvoker)(() =>
+            {
+                OldColor = pBoxIconUsers.BackColor;
+                pBoxIconUsers.BackColor = color;
+            }));
         }
 
         public void SetColorChekingConnection(Color backColor)
         {
-            btnConnect.BackColor = backColor;
+            Invoke((MethodInvoker)(() =>
+            {
+                btnConnect.BackColor = backColor;
+            }));
         }
 
         public void UpdateComBoxDomains(string[] items)
         {
-            comBoxDomains.Items.AddRange(items);
-            comBoxDomains.Text = comBoxDomains.Items[0].ToString();
+            Invoke((MethodInvoker)(() =>
+            {
+                comBoxDomains.Items.AddRange(items);
+                comBoxDomains.Text = comBoxDomains.Items[0].ToString();
+            }));
         }
 
         private void btnAuthorization_Click(object sender, EventArgs e)
