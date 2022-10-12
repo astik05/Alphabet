@@ -14,7 +14,7 @@ namespace Alphabet.Presenter
     {
         private Person _person;
 
-        IPersonsAddOrDeleteView _personsOpearationsView;
+        IPersonsAddOrDeleteView _personsAddOrDeleteView;
 
         IPersonsSelectView _personsSelectView;
 
@@ -30,7 +30,7 @@ namespace Alphabet.Presenter
         {
             if (personsOpearationsView is IPersonsAddOrDeleteView)
             {
-                _personsOpearationsView = (IPersonsAddOrDeleteView)personsOpearationsView;
+                _personsAddOrDeleteView = (IPersonsAddOrDeleteView)personsOpearationsView;
                 SubscribeForPersonsAddOrDeleteView();
             }
             else if (personsOpearationsView is IPersonsSelectView)
@@ -42,8 +42,8 @@ namespace Alphabet.Presenter
 
         private void SubscribeForPersonsAddOrDeleteView()
         {
-            _personsOpearationsView.InsertTelegramEventHandler += InsertingNumberTelegram;
-            _personsOpearationsView.InsertPersonsEventHandler += InsertingPersons;
+            _personsAddOrDeleteView.InsertTelegramEventHandler += InsertingNumberTelegram;
+            _personsAddOrDeleteView.RegistrationPersonsEventHandler += InsertingNumberTelegram;
         }
 
         private void SubscribeForPersonsSelectView()
@@ -60,16 +60,113 @@ namespace Alphabet.Presenter
             _numberTelegram = int.Parse(insertTelegram.ParseTableResult(0, 0));
         }
 
-        private void InsertingPersons(int borderRouting, int typeOperation)
+        private async void OperationsOnPersons(int borderRouting, int typeOperation)
         {
-            var list = Person.List.Where(x => x.Route == borderRouting && x.Type == typeOperation).ToList();
-            foreach (Person item in list)
+            string levelMessage = "Info";
+            string message = string.Empty;
+            await Task.Run(() =>
             {
-                var insertPerson = new InsertPerson(item, _numberTelegram);
-                insertPerson.Execute();
-                var flagInserted = insertPerson.ParseTableResult(0, 0);
-                if (flagInserted != "")
-                    Person.List.Remove(item);
+                try
+                {
+                    var list = Person.List.Where(x => x.Route == borderRouting && x.Type == typeOperation).ToList();
+                    if (typeOperation == 2)
+                        RegistrationPersons(list, ref levelMessage, ref message);
+                    else if (typeOperation == 1)
+                        DeregistrationPersons(list, ref levelMessage, ref message);
+
+                    _personsAddOrDeleteView.ViewResultOperation(list, message);
+                }
+                catch (Exception exception)
+                {
+                    levelMessage = "Error";
+                    message = "Ошибка выполнения операции над персоной! " + exception.ToString();
+                }
+                finally
+                {
+                    Logger.Writer(new SQLWriteSystemLogger(
+                        new AttributeSystemLog()
+                        {
+                            DateTimeCreate = DateTime.Now,
+                            LevelMessage = levelMessage,
+                            Message = message
+                        }));
+                }
+            });
+        }
+
+        private void RegistrationPersons(List<Person> persons, ref string levelMessage, ref string message)
+        {
+            Logger.Writer(new SQLWriteSystemLogger(
+                new AttributeSystemLog()
+                {
+                    DateTimeCreate = DateTime.Now,
+                    LevelMessage = "Info",
+                    Message = "Начало операции постановки на учёт."
+                }));
+            try
+            {
+                int count = 0;
+                foreach (Person item in persons)
+                {
+                    var insertPerson = new InsertPerson(item, _numberTelegram);
+                    insertPerson.Execute();
+                    var flagInserted = insertPerson.ParseTableResult(0, 0);
+                    if (flagInserted != "")
+                    {
+                        Person.List.Remove(item);
+                        ++count;
+                    }
+                }
+                levelMessage = "Info";
+                message = "Завершение операции постановки на учёт. Количество обработанных записей - " + count.ToString();
+            }
+            catch (Exception exception)
+            {
+                levelMessage = "Error";
+                message = "Ошибка операции постановки на учёт! " + exception.ToString();
+            }
+        }
+
+        private void DeregistrationPersons(List<Person> persons, ref string levelMessage, ref string message)
+        {
+            Logger.Writer(new SQLWriteSystemLogger(
+                new AttributeSystemLog()
+                {
+                    DateTimeCreate = DateTime.Now,
+                    LevelMessage = "Info",
+                    Message = "Начало операции снятия с учёта."
+                }));
+            try
+            {
+                foreach (Person item in persons)
+                {
+                    var comparePersons = new ComparePersons(item);
+                    comparePersons.Execute();
+
+                    item.DT = comparePersons.GetTableResult();
+                    if (item.DT.Rows.Count == 0)
+                        item.IsDeleted = false;
+                    else if (item.DT.Rows.Count > 1)
+                        item.IsMulty = true;
+                    else
+                    {
+                        item.IsDeleted = true;
+                        var changeStatePerson = new ChangeStatePerson(Convert.ToInt64(item.DT.Rows[0].ItemArray[0]), _numberTelegram);
+                        changeStatePerson.Execute();
+                    }
+                }
+
+                persons.RemoveAll(x => x.IsDeleted);
+                levelMessage = "Info";
+                var countPersonsNoDelete = persons.Where(x => !x.IsDeleted).Count();
+                var countPersons = persons.Count();
+                var res = string.Format("Количество снятых записей - {0}. Ожидают принятия решения - {1}.", countPersons - countPersonsNoDelete, countPersonsNoDelete));
+                message = "Завершение операции снятия с учёта. " + res;
+            }
+            catch (Exception exception)
+            {
+                levelMessage = "Error";
+                message = "Ошибка операции снятия с учёта! " + exception.ToString();
             }
         }
 

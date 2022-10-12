@@ -535,6 +535,7 @@ namespace Alphabet.Service
             _person = person;
             _idTelegram = idTelegram;
         }
+
         public override void Execute()
         {
             base.Execute();
@@ -558,6 +559,60 @@ namespace Alphabet.Service
             _sqlCommand.Parameters.AddWithValue("@Additionally", _person.Additionally == null ? (object)DBNull.Value : _person.Additionally);
             _sqlCommand.Parameters.AddWithValue("@PlaceOfBirth", _person.PlaceOfBirth == null ? (object)DBNull.Value : _person.PlaceOfBirth);
             _sqlCommand.Parameters.AddWithValue("@IdPerson", 0).Direction = ParameterDirection.Output;
+        }
+    }
+
+    class ComparePersons : BaseQuery
+    {
+        private Person _person;
+
+        public ComparePersons(Person person)
+        {
+            _person = person;
+        }
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandTimeout = 86400;
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "Compare";
+            _sqlCommand.Parameters.AddWithValue("@FIO", _person.FIO);
+            _sqlCommand.Parameters.AddWithValue("@DateOfBirth", _person.DateOfBirth.ToString("yyyyMMdd"));
+            _sqlCommand.Parameters.AddWithValue("@DateExpire", _person.DateExpire.ToString("yyyyMMdd"));
+            _sqlCommand.Parameters.AddWithValue("@Route", _person.Route);
+            _sqlCommand.Parameters.AddWithValue("@Mark", _person.Index);
+            _sqlCommand.Parameters.AddWithValue("@TaskKey", _person.TaskKey);
+        }
+    }
+
+    class ChangeStatePerson : BaseQuery
+    {
+        private long _idPerson;
+
+        private int _idTelegram;
+
+        public ChangeStatePerson(long idPerson, int idTelegram)
+        {
+            _idPerson = idPerson;
+            _idTelegram = idTelegram;
+        }
+
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandTimeout = 86400;
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "Change";
+            _sqlCommand.Parameters.AddWithValue("@IdPerson", _idPerson);
+            _sqlCommand.Parameters.AddWithValue("@IdTelegram", _idTelegram);
         }
     }
 

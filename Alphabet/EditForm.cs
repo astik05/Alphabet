@@ -26,7 +26,7 @@ namespace Alphabet
 
         public event Action<string, DateTime, string> InsertTelegramEventHandler;
 
-        public event Action<int, int> InsertPersonsEventHandler;
+        public event Action<int, int> OperationsOnPersonsEventHandler;
 
         public EditForm()
         {
@@ -110,7 +110,8 @@ namespace Alphabet
         private async void button2_Click(object sender, EventArgs e)
         {
             InsertTelegramEventHandler.Invoke(tbNumber.Text, dtDate.Value, "");
-            InsertPersonsEventHandler.Invoke(rbIn.Checked ? 0 : 1, rbAdd.Checked ? 2 : 1);
+            OperationsOnPersonsEventHandler.Invoke(rbIn.Checked ? 0 : 1, rbAdd.Checked ? 2 : 1);
+
             if (tbNumber.Text.Length == 0)
             {
                 MessageBox.Show("Введите номер телеграммы!");
@@ -136,102 +137,103 @@ namespace Alphabet
                       }*/
                     _idRoute = rbIn.Checked ? 0 : 1;
                     progressBar1.Value = 0;
-
-                    if (rbAdd.Checked)
-                        await Registration();
-                    else
-                        await DeRegistration();
-
                 }
             }
         }
 
-        public Task DeRegistration()
-        {
-            return Task.Run(async () =>
-            {
-                Log.Write(Log.Type.INFO, "Начало операции снятия с учёта. ");
-                try
-                {
-                    var list = Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1));
-                    Invoke(new MethodInvoker(() => { progressBar1.Maximum = list.Count(); }));
-                    foreach (Person item in list)
-                    {
-                        Invoke(new MethodInvoker(() => { progressBar1.Value++; }));
+        //public Task DeRegistration()
+        //{
+        //    return Task.Run(async () =>
+        //    {
+        //        Log.Write(Log.Type.INFO, "Начало операции снятия с учёта. ");
+        //        try
+        //        {
+        //            var list = Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1));
+        //            Invoke(new MethodInvoker(() => { progressBar1.Maximum = list.Count(); }));
+        //            foreach (Person item in list)
+        //            {
+        //                Invoke(new MethodInvoker(() => { progressBar1.Value++; }));
                          
-                        /*if (Person.List.FirstOrDefault(x => x.IsDeleted && x.FIO == item.FIO && x.DateOfBirth == item.DateOfBirth
-                 && x.DateExpire == item.DateExpire && x.Type == 1) != null)
-                        {
-                            item.IsDeleted = true;
-                            continue;
-                        }*/
-                        item.DT = await DB.Compare(item);
-                        if (item.DT.Rows.Count == 0)
-                        {
-                            item.IsDeleted = false;
-                        }
-                        else if (item.DT.Rows.Count > 1)
-                        {
-                            item.IsMulty = true;
-                        }
-                        else
-                        {
-                            item.IsDeleted = true;
-                            await DB.Change(Convert.ToInt64(item.DT.Rows[0].ItemArray[0]), _idTelegram);
-                        }
+        //                /*if (Person.List.FirstOrDefault(x => x.IsDeleted && x.FIO == item.FIO && x.DateOfBirth == item.DateOfBirth
+        //         && x.DateExpire == item.DateExpire && x.Type == 1) != null)
+        //                {
+        //                    item.IsDeleted = true;
+        //                    continue;
+        //                }*/
+        //                item.DT = await DB.Compare(item);
+        //                if (item.DT.Rows.Count == 0)
+        //                {
+        //                    item.IsDeleted = false;
+        //                }
+        //                else if (item.DT.Rows.Count > 1)
+        //                {
+        //                    item.IsMulty = true;
+        //                }
+        //                else
+        //                {
+        //                    item.IsDeleted = true;
+        //                    await DB.Change(Convert.ToInt64(item.DT.Rows[0].ItemArray[0]), _idTelegram);
+        //                }
 
-                    }
-                    Invoke(new MethodInvoker(() =>
-                    {
-                        Person.List.RemoveAll(x => x.IsDeleted && x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1));
-                        CreateTable();
-                        var count = Person.List.Where(x => !x.IsDeleted && x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).Count();
-                        var res = string.Format("Количество снятых записей - {0}. Ожидают принятия решения - {1}.", progressBar1.Maximum - count, count);
-                        Log.Write(Log.Type.INFO, "Завершение операции снятия с учёта. " + res + "\n");
-                        Block(true);
-                        MessageBox.Show(this, res, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }));
-                }
-                catch (Exception ex)
-                {
-                    Log.Write(Log.Type.ERROR, "Ошибка операции снятия с учёта.\n" + ex.Message);
-                }
-            });
-        }
+        //            }
+        //            Invoke(new MethodInvoker(() =>
+        //            {
+        //                //Person.List.RemoveAll(x => x.IsDeleted && x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1));
+        //                //CreateTable();
+        //                var count = Person.List.Where(x => !x.IsDeleted && x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).Count();
+        //                var res = string.Format("Количество снятых записей - {0}. Ожидают принятия решения - {1}.", progressBar1.Maximum - count, count);
+        //                Log.Write(Log.Type.INFO, "Завершение операции снятия с учёта. " + res + "\n");
+        //                Block(true);
+        //                MessageBox.Show(this, res, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //            }));
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Log.Write(Log.Type.ERROR, "Ошибка операции снятия с учёта.\n" + ex.Message);
+        //        }
+        //    });
+        //}
 
-        public Task Registration()
-        {
-            return Task.Run(async () =>
-             {
-                 Log.Write(Log.Type.INFO, "Начало операции постановки на учёт.");
-                 try
-                 {
-                     var list = Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).ToList();
-                     Invoke(new MethodInvoker(() => { progressBar1.Maximum = list.Count(); }));
-                     int sum = 0;
-                     foreach (Person item in list)
-                     {
-                         var res = await DB.InsertPerson(item, _idTelegram);
-                         sum += res;
-                         if (res == 1)
-                             Person.List.Remove(item);
+        //public Task Registration()
+        //{
+            //return Task.Run(async () =>
+             //{
+                 //Log.Write(Log.Type.INFO, "Начало операции постановки на учёт.");
+                 //try
+                 //{
+                     //var list = Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).ToList();
+                     //Invoke(new MethodInvoker(() => { progressBar1.Maximum = list.Count(); }));
+                     //int sum = 0;
+                     //foreach (Person item in list)
+                     //{
+                     //    var res = await DB.InsertPerson(item, _idTelegram);
+                     //    sum += res;
+                     //    if (res == 1)
+                     //        Person.List.Remove(item);
                          
-                         Invoke(new MethodInvoker(() => { progressBar1.Value++; }));
-                     }
-                     Invoke(new MethodInvoker(() =>
-                     {
-                         var res = string.Format("Количество обработанных записей - {0}", sum);
-                         Log.Write(Log.Type.INFO, "Завершение операции постановки на учёт. " + res);
-                         CreateTable();
-                         Block(true);
-                         MessageBox.Show(this, res, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                     }));
-                 }
-                 catch (Exception ex)
-                 {
-                     Log.Write(Log.Type.ERROR, "Ошибка операции постановки на учёт.\n" + ex.Message);
-                 }
-             });
+                         //Invoke(new MethodInvoker(() => { progressBar1.Value++; }));
+                     //}
+                     //Invoke(new MethodInvoker(() =>
+                     //{
+                     //    var res = string.Format("Количество обработанных записей - {0}", sum);
+                     //    Log.Write(Log.Type.INFO, "Завершение операции постановки на учёт. " + res);
+                     //    CreateTable();
+                     //    Block(true);
+                     //    MessageBox.Show(this, res, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                     //}));
+                 //}
+                 //catch (Exception ex)
+                 //{
+                     //Log.Write(Log.Type.ERROR, "Ошибка операции постановки на учёт.\n" + ex.Message);
+                 //}
+             //});
+        //}
+
+        public void ViewResultOperation(object dataPersons, string message)
+        {
+            CreateTableResult(dataPersons);
+            Block(true);
+            MessageBox.Show(this, message, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void dataGridView1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -257,11 +259,11 @@ namespace Alphabet
             }
         }
 
-        private void CreateTable()
+        private void CreateTableResult(object dataPersons)
         {
             dgvList.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
             dgvList.RowHeadersVisible = false;
-            dgvList.DataSource = Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).ToList();
+            dgvList.DataSource = dataPersons;
             dgvList.Columns[1].HeaderText = "ФИО";
             dgvList.Columns[2].HeaderText = "Дата рождения";
             dgvList.Columns[3].HeaderText = "Отметка";

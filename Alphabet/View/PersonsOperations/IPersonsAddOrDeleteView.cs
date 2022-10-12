@@ -10,6 +10,8 @@ namespace Alphabet.View.PersonsOperations
     {
         event Action<string, DateTime, string> InsertTelegramEventHandler;
 
-        event Action<int, int> InsertPersonsEventHandler;
+        event Action<int, int> OperationsOnPersonsEventHandler;
+
+        void ViewResultOperation(object dataPersons, string message);
     }
 }
