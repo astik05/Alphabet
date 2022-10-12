@@ -458,7 +458,7 @@ go
 create proc SelectMarks
 as
 begin
-	select Id as [ИД], Name as [Индекс] from [Mark]
+	select [Name] from [Mark]
 end
 
 go
@@ -469,7 +469,7 @@ go
 create proc SelectCountries
 as
 begin
-	select Id as [ИД], ShortName as [Сокращенное название] from [Country]
+	select ShortName from [Country]
 end
 
 go
@@ -480,7 +480,18 @@ go
 create proc SelectUsersLogin
 as
 begin
-	select Id as [ИД], [Login] as [Логин] from [User]
+	select [Login] from [User]
+end
+
+go
+
+if object_id('SelectAllArms') is not null
+drop proc SelectAllArms
+go
+create proc SelectAllArms
+as
+begin
+	select [Name] as [Название АРМа] from ARM
 end
 
 
@@ -498,7 +509,7 @@ insert into UserGroup(Name, IsDeleted) values('Пользователи',0)
 
 insert into ARM values('АРМ администратора', null, null)
 insert into ARM values('АРМ поиска лиц', null, null)
-insert into ARM values('АРМ постановки/снятия', null, null)
+insert into ARM values('АРМ постановка/снятие', null, null)
 
 
 exec ViewLogs '2022.10.07 05:36:02', '2022.10.08 05:36:02', null, null
@@ -536,6 +547,9 @@ from ARM
 
 select *
 from UserSession
+
+select *
+from UserGroup
 
 update UserSession set FlagSession = 0
 
