@@ -124,6 +124,19 @@ namespace Alphabet.Service
             return _tableResult.Rows;
         }
 
+        public string[] GetArray()
+        {
+            string[] result = new string[CountTableResultRows()];
+            int count = 0;
+            foreach (DataRow row in _tableResult.Rows)
+            {
+                result[count] = row.ItemArray[0].ToString();
+                ++count;
+            }
+
+            return result;
+        }
+
         public int CountTableResultRows()
         {
             return _tableResult.Rows.Count;
@@ -686,6 +699,20 @@ inner join UserAction u on u.IdPerson = p.Id
 inner join [User] us on us.Id=u.IdUser " + (string.IsNullOrWhiteSpace(_filters) ? "" : _filters.Trim().Insert(0, "where").Replace("whereand", "where")) +
 @" group by  p.Id, p.IsDeleted  , p.FIO  , p.DateOfBirth , m.Name , t.Number , t.DateOfSigning ,
 p.DateExpire  , p.Task , us.FIO ";
+        }
+    }
+
+    class SelectAllArms : BaseQuery
+    {
+        public override void Execute()
+        {
+            base.Execute();
+        }
+
+        protected override void CreateSqlCommand()
+        {
+            _sqlCommand.CommandType = CommandType.StoredProcedure;
+            _sqlCommand.CommandText = "SelectAllArms";
         }
     }
 }

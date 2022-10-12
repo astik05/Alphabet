@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Alphabet.Model;
+
 namespace Alphabet.Service
 {
     internal class Logger
@@ -51,6 +53,9 @@ namespace Alphabet.Service
 
         public override void Write()
         {
+            if (UserSessions.Instance.User != null)
+                _attributeLog.Message = " Операция выполнялась от пользователя: " + UserSessions.Instance.User.Login;
+
             var addRecordToLog = new AddRecordToLog(_attributeLog.DateTimeCreate, _attributeLog.LevelMessage, _attributeLog.Message);
             addRecordToLog.Execute();
         }

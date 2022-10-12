@@ -27,6 +27,13 @@ namespace Alphabet.Presenter
             Subscribe();
         }
 
+        public UserSessionsPresenter(IBaseVIew userSessionsView)
+        {
+            _userSessionsView = (IUserSessionsView)userSessionsView;
+
+            Subscribe();
+        }
+
         private void Subscribe()
         {
             _userSessionsView.CloseUserSessionEventHandler += ResetUserSession;
@@ -68,17 +75,18 @@ namespace Alphabet.Presenter
 
 
                     List<ARM> arms = new List<ARM>();
-                    var storagePanelsARMs = new StoragePanelsARMs();
+                    ViewPermissionARMs(arms , permissionARMs);
+                    //var storagePanelsARMs = new StoragePanelsARMs();
 
-                    foreach (DataRow permissionARM in permissionARMs.ParseTableResult())
-                    {
-                        var nameARM = permissionARM.ItemArray[0].ToString();
-                        var arm = ARMManager.EnterARM(nameARM);
-                        arms.Add(arm);
+                    //foreach (DataRow permissionARM in permissionARMs.ParseTableResult())
+                    //{
+                    //    var nameARM = permissionARM.ItemArray[0].ToString();
+                    //    var arm = ARMManager.EnterARM(nameARM);
+                    //    arms.Add(arm);
 
-                        storagePanelsARMs.AddItem(new PanelARM() { Arm = arm, ARMName = nameARM });
-                    }
-                    storagePanelsARMs.SetParent(_userSessionsView.ParentGroundOfARMs);
+                    //    storagePanelsARMs.AddItem(new PanelARM() { Arm = arm, ARMName = nameARM });
+                    //}
+                    //storagePanelsARMs.SetParent(_userSessionsView.ParentGroundOfARMs);
 
                     UserSessions.Instance.IsOpen = true;
                     UserSessions.Instance.User = new User()
@@ -111,6 +119,31 @@ namespace Alphabet.Presenter
                         Message = message
                     }));
             }
+        }
+
+        public void ChangeStateLocalAdminSession()
+        {
+            var allARMs = new SelectAllArms();
+            allARMs.Execute();
+
+
+            List<ARM> arms = new List<ARM>();
+            ViewPermissionARMs(arms, allARMs);
+        }
+
+        private void ViewPermissionARMs(List<ARM> arms, BaseQuery baseQuery)
+        {
+            var storagePanelsARMs = new StoragePanelsARMs();
+
+            foreach (DataRow permissionARM in baseQuery.ParseTableResult())
+            {
+                var nameARM = permissionARM.ItemArray[0].ToString();
+                var arm = ARMManager.EnterARM(nameARM);
+                arms.Add(arm);
+
+                storagePanelsARMs.AddItem(new PanelARM() { Arm = arm, ARMName = nameARM });
+            }
+            storagePanelsARMs.SetParent(_userSessionsView.ParentGroundOfARMs);
         }
 
         private async void ResetUserSession()

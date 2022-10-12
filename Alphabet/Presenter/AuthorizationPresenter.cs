@@ -102,8 +102,8 @@ namespace Alphabet.Presenter
 
         private void AuthorizationLocalAdmin()
         {
-            var ARMForm = new FormAdministrator();
-            ARMForm.ShowDialog();
+            var UserSessionsPresenter = new UserSessionsPresenter(_authorizationView);
+            UserSessionsPresenter.ChangeStateLocalAdminSession();
         }
 
         private void AuthorizationUserDB(string userName, string password)
@@ -112,8 +112,14 @@ namespace Alphabet.Presenter
             string message = string.Empty;
             try
             {
-                levelMessage = "Info";
-                message = "Попытка авторизации пользователем " + userName + ".";
+                Logger.Writer(new SQLWriteSystemLogger(
+                    new AttributeSystemLog()
+                    {
+                        DateTimeCreate = DateTime.Now,
+                        LevelMessage = "Info",
+                        Message = "Попытка авторизации пользователем " + userName + "."
+                    }));
+
                 if (_authorization.IsEnterUserEqualWindowsUser(userName))
                 {
                     if (_authorization.HasADEnterDataUser(userName, password))

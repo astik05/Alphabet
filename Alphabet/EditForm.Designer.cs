@@ -621,7 +621,6 @@
             this.button1.TabIndex = 30;
             this.button1.Text = "Снять с учёта";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // EditForm
             // 
@@ -651,7 +650,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvList)).EndInit();
             this.cmsList.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAdd)).EndInit();

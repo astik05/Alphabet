@@ -114,6 +114,7 @@
     <Compile Include="View\AdministratorViews\IAdministratorView.cs" />
     <Compile Include="View\IAuthorizationView.cs" />
     <Compile Include="View\IBaseVIew.cs" />
+    <Compile Include="View\IProgressBarView.cs" />
     <Compile Include="View\PersonsOperations\IPersonsOperationsView.cs" />
     <Compile Include="View\PersonsOperations\IPersonsAddOrDeleteView.cs" />
     <Compile Include="View\PersonsOperations\IPersonsSelectView.cs" />

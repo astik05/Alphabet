@@ -13,11 +13,11 @@ namespace Alphabet
 
         public event Action LoadDataOfFiltersSearchEventHandler;
 
-        public object ViewUsers { get; set; }
+        public string[] ViewUsers { get; set; }
 
-        public object ViewMarks { get; set; }
+        public string[] ViewMarks { get; set; }
 
-        public object ViewCountries { get; set; }
+        public string[] ViewCountries { get; set; }
 
         public SearchForm()
         {
@@ -28,14 +28,24 @@ namespace Alphabet
 
         public void UpdateFiltersControls()
         {
-            cbUser.DataSource = ViewUsers;
-            cbIndex.DataSource = ViewMarks;
-            cbCountry.DataSource = ViewCountries;
+            Invoke((MethodInvoker)(() =>
+            {
+                cbUser.Items.Clear();
+                cbIndex.Items.Clear();
+                cbCountry.Items.Clear();
+
+                cbUser.Items.AddRange(ViewUsers);
+                cbIndex.Items.AddRange(ViewMarks);
+                cbCountry.Items.AddRange(ViewCountries);
+            }));
         }
 
         public void UpdateFindedListPersons(object findedPersons)
         {
-            dgvList.DataSource = findedPersons;
+            Invoke((MethodInvoker)(() =>
+            {
+                dgvList.DataSource = findedPersons;
+            }));
         }
 
         private void SelectFilter(object sender)
@@ -59,9 +69,8 @@ namespace Alphabet
             ClearFilters();
         }
 
-        private async void bProcess_Click(object sender, EventArgs e)
+        private void bProcess_Click(object sender, EventArgs e)
         {
-
             bProcess.Enabled = false;
             var filters = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}",
                 checkBox1.Checked ? "and p.FIO like '%" + tbName.Text + "%'" : "",
@@ -82,6 +91,7 @@ namespace Alphabet
 
         private void SearchForm_Load(object sender, EventArgs e)
         {
+            new PersonsOpearationsPresenter(new Person(), this);
             LoadDataOfFiltersSearchEventHandler.Invoke();
         }
 

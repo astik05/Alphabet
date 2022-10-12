@@ -13,11 +13,11 @@ namespace Alphabet.View.PersonsOperations
 
         event Action LoadDataOfFiltersSearchEventHandler;
 
-        object ViewUsers { get; set; }
+        string[] ViewUsers { get; set; }
 
-        object ViewMarks { get; set; }
+        string[] ViewMarks { get; set; }
 
-        object ViewCountries { get; set; }
+        string[] ViewCountries { get; set; }
 
         void UpdateFiltersControls();
 

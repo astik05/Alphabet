@@ -450,6 +450,40 @@ begin
 	commit tran
 end
 
+go
+
+if object_id('SelectMarks') is not null
+drop proc SelectMarks
+go
+create proc SelectMarks
+as
+begin
+	select Id as [ИД], Name as [Индекс] from [Mark]
+end
+
+go
+
+if object_id('SelectCountries') is not null
+drop proc SelectCountries
+go
+create proc SelectCountries
+as
+begin
+	select Id as [ИД], ShortName as [Сокращенное название] from [Country]
+end
+
+go
+
+if object_id('SelectUsersLogin') is not null
+drop proc SelectUsersLogin
+go
+create proc SelectUsersLogin
+as
+begin
+	select Id as [ИД], [Login] as [Логин] from [User]
+end
+
+
 
 
 insert into LogType values('Debug', 'Сообщения отладки, профилирования')
@@ -462,11 +496,19 @@ insert into LogType values('Fatal', 'Сообщения о фатальных ошибках, требующие не
 insert into UserGroup(Name, IsDeleted) values('Администраторы',0)
 insert into UserGroup(Name, IsDeleted) values('Пользователи',0)
 
+insert into ARM values('АРМ администратора', null, null)
+insert into ARM values('АРМ поиска лиц', null, null)
+insert into ARM values('АРМ постановки/снятия', null, null)
+
 
 exec ViewLogs '2022.10.07 05:36:02', '2022.10.08 05:36:02', null, null
 
 exec ViewUserActions '2022.08.08 05:36:02', '2022.10.09 05:36:02', 'Администратор', null
 
+
+
+select *
+from ARM
 
 select *
 from [User]
@@ -475,7 +517,7 @@ select *
 from UserActionType
 
 select *
-from UserAction
+from Mark
 
 select *
 from Log
