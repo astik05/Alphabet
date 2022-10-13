@@ -112,12 +112,43 @@ namespace Alphabet.Presenter
 
         public void ChangeStateLocalAdminSession()
         {
-            var allARMs = new SelectAllArms();
-            allARMs.Execute();
+            string levelMessage = "Info";
+            string message = string.Empty;
+            try
+            {
+                var allARMs = new SelectAllArms();
+                allARMs.Execute();
 
 
-            List<ARM> arms = new List<ARM>();
-            ViewPermissionARMs(arms, allARMs);
+                List<ARM> arms = new List<ARM>();
+                ViewPermissionARMs(arms, allARMs);
+
+                UserSessions.Instance.IsOpen = true;
+                UserSessions.Instance.User = new User()
+                {
+                    UserID = 0,
+                    Login = Admin.Login,
+                    FIO = Admin.Login
+                };
+                levelMessage = "Info";
+                message = "Сессия пользователя " + UserSessions.Instance.User.Login + " успешно открыта.";
+            }
+            catch (Exception exception)
+            {
+                Connection.Instance.CloseConnection();
+                levelMessage = "Error";
+                message = "Ошибка открытия сессии пользователя! " + exception.ToString();
+            }
+            finally
+            {
+                Logger.Writer(new SQLWriteSystemLogger(
+                    new AttributeSystemLog()
+                    {
+                        DateTimeCreate = DateTime.Now,
+                        LevelMessage = levelMessage,
+                        Message = message
+                    }));
+            }
         }
 
         private void ViewPermissionARMs(List<ARM> arms, BaseQuery baseQuery)

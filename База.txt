@@ -517,6 +517,8 @@ exec ViewLogs '2022.10.07 05:36:02', '2022.10.08 05:36:02', null, null
 exec ViewUserActions '2022.08.08 05:36:02', '2022.10.09 05:36:02', 'Администратор', null
 
 
+exec ResetUserSession 'Admin'
+
 
 select *
 from ARM
@@ -558,10 +560,6 @@ insert into Mark values('Н',null, 0)
 insert into Person values('тест тестов тестович', '1995-04-30', '2025-04-30', 'М', 'asd', 'asd', 2, 0, null, 0)
 
 insert into UserActionType(Name, IdARM) values('Снятие', 0)
-
-insert into ARM values('Работа с пользователями', null, null)
-insert into ARM values('Просмотр логов', null, null)
-insert into ARM values('Работа в алфавите', null, null)
 
 insert into UserGroupPermissions values(0, 0)
 insert into UserGroupPermissions values(0, 1)

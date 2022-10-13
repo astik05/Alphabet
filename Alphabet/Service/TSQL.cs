@@ -12,9 +12,11 @@ namespace Alphabet.Service
     {
         private SqlConnection _connection;
 
-        private Connection()
+        public Connection()
         {
             _connection = new SqlConnection();
+            _connection.ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
+                                StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True";
         }
 
         private static Connection _instance;
@@ -34,7 +36,7 @@ namespace Alphabet.Service
         {
             if (_instance.GetConnection().State == ConnectionState.Closed)
                 _instance.GetConnection().ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
-                                StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True; Pooling = true";
+                                StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True";
         }
 
         public SqlConnection GetConnection()
@@ -64,14 +66,13 @@ namespace Alphabet.Service
 
         public virtual void Execute()
         {
-            var connecting = Connection.Instance.GetConnection();
+            var connecting = new Connection().GetConnection();
             try
             {
                 _tableResult = new DataTable();
                 _sqlCommand = connecting.CreateCommand();
 
                 CreateSqlCommand();
-
                 connecting.Open();
                 SqlDataReader reader = _sqlCommand.ExecuteReader();
                 for (int i = 0; i < reader.FieldCount; i++)
