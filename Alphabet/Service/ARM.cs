@@ -47,7 +47,7 @@ namespace Alphabet.Service
 
     class ARMAddOrDeletePersons : ARM
     {
-        public const string Name = "АРМ постановки/снятия";
+        public const string Name = "АРМ постановка/снятие";
 
         public ARMAddOrDeletePersons()
         {

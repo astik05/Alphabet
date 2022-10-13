@@ -3,52 +3,24 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Collections;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Alphabet.Model;
 
 namespace Alphabet.Service
 {
-    internal class Connection
+    internal class BaseConnection
     {
         private SqlConnection _connection;
 
-        public Connection()
+        public BaseConnection()
         {
             _connection = new SqlConnection();
             _connection.ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
                                 StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True";
         }
 
-        private static Connection _instance;
-
-        public static Connection Instance
-        {
-            get
-            {
-                _instance = new Connection();
-
-                SetStringConnection();
-                return _instance;
-            }
-}
-
-        private static void SetStringConnection()
-        {
-            if (_instance.GetConnection().State == ConnectionState.Closed)
-                _instance.GetConnection().ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
-                                StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True";
-        }
-
-        public SqlConnection GetConnection()
-        {
-            return _connection;
-        }
-
-        public void CloseConnection()
-        {
-            if (_connection.State == ConnectionState.Open)
-                _connection.Close();
-        }
+        public SqlConnection Connection { get { return _connection; } }
     }
 
     class StringConnection
@@ -66,7 +38,8 @@ namespace Alphabet.Service
 
         public virtual void Execute()
         {
-            var connecting = new Connection().GetConnection();
+            var baseConnection = new BaseConnection();
+            var connecting = baseConnection.Connection;
             try
             {
                 _tableResult = new DataTable();
@@ -74,6 +47,11 @@ namespace Alphabet.Service
 
                 CreateSqlCommand();
                 connecting.Open();
+                while ( connecting.State != ConnectionState.Open)
+                {
+                    connecting.Close();
+                    connecting.Open();
+                }
                 SqlDataReader reader = _sqlCommand.ExecuteReader();
                 for (int i = 0; i < reader.FieldCount; i++)
                     _tableResult.Columns.Add(reader.GetName(i).ToString());
@@ -158,7 +136,8 @@ namespace Alphabet.Service
     {
         public override void Execute()
         {
-            var connecting = Connection.Instance.GetConnection();
+            var baseConnection = new BaseConnection();
+            var connecting = baseConnection.Connection;
             connecting.Open();
         }
     }

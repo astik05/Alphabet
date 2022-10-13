@@ -494,15 +494,11 @@ begin
 	select [Name] as [Название АРМа] from ARM
 end
 
-
-
-
 insert into LogType values('Debug', 'Сообщения отладки, профилирования')
 insert into LogType values('Info', 'Обычные сообщения, информирующие о действиях системы')
 insert into LogType values('Warn', 'Сообщения, требующие разбора что произошло')
 insert into LogType values('Error', 'Сообщения об ошибках в работе системы, требующие вмешательства')
 insert into LogType values('Fatal', 'Сообщения о фатальных ошибках, требующие немедленной реакции')
-
 
 insert into UserGroup(Name, IsDeleted) values('Администраторы',0)
 insert into UserGroup(Name, IsDeleted) values('Пользователи',0)
@@ -510,14 +506,6 @@ insert into UserGroup(Name, IsDeleted) values('Пользователи',0)
 insert into ARM values('АРМ администратора', null, null)
 insert into ARM values('АРМ поиска лиц', null, null)
 insert into ARM values('АРМ постановка/снятие', null, null)
-
-
-exec ViewLogs '2022.10.07 05:36:02', '2022.10.08 05:36:02', null, null
-
-exec ViewUserActions '2022.08.08 05:36:02', '2022.10.09 05:36:02', 'Администратор', null
-
-
-exec ResetUserSession 'Admin'
 
 
 select *

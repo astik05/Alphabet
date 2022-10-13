@@ -94,7 +94,6 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
-                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка открытия сессии пользователя! " + exception.ToString();
             }
@@ -135,7 +134,6 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
-                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка открытия сессии пользователя! " + exception.ToString();
             }
@@ -181,7 +179,6 @@ namespace Alphabet.Presenter
             }
             catch (Exception exception)
             {
-                Connection.Instance.CloseConnection();
                 levelMessage = "Error";
                 message = "Ошибка закрытия сессии пользователя! " + exception.ToString();
             }
