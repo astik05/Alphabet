@@ -7,6 +7,11 @@ using Alphabet.View.PersonsOperations;
 using Alphabet.Service;
 using Alphabet.Presenter;
 using Alphabet.Model;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Text;
 
 namespace Alphabet
 {
@@ -25,6 +30,8 @@ namespace Alphabet
         public event Action<int> GetPersonDTEventHandler;
 
         public event Action<int, int> ChangeBorderRoutingEventHandler;
+
+        public event Action<int> LoadPersonsFromFile;
 
         public EditForm()
         {
@@ -48,7 +55,7 @@ namespace Alphabet
         {
             Invoke((MethodInvoker)(() =>
             {
-                foreach (DataGridViewRow item in dgvList.Rows)
+            //    foreach (DataGridViewRow item in dgvList.Rows)
                 {
                     dgvList.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
                     dgvList.RowHeadersVisible = false;
@@ -141,7 +148,7 @@ namespace Alphabet
         {
             Invoke((MethodInvoker)(() =>
             {
-                progressBar1.Value = value;
+                progressBar1.Value++;
             }));
         }
 
@@ -152,35 +159,102 @@ namespace Alphabet
                 progressBar1.Maximum = max;
             }));
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        public   Task Read(string path, int type, int route)
         {
-            //_date = DateTime.Now;
+            return Task.Run(() =>
+            {
+        
+                Logger.Writer(new SQLWriteSystemLogger(
+                new AttributeSystemLog()
+                {
+                    DateTimeCreate = DateTime.Now,
+                    LevelMessage = "Info",
+                    Message = "Загрузка списка ОУ."
+                }));
+                try
+                {
+                    int i = 0;
+                    Person person = null;
+                    foreach (var line in File.ReadLines(path, Encoding.GetEncoding(866)))
+                    {
+                        if (i % 2 == 0)
+                        {
+                            var d = line.Substring(68, 6).Trim().Length == 2 ? line.Substring(68, 6).Trim().Insert(0, "0101") : line.Substring(68, 6).Replace("0000", "0101");
 
-            //using (OpenFileDialog ofd = new OpenFileDialog { Filter = "Архив | *.zip" })
-            //{
-            //    dgvList.DataSource = string.Empty;
-            //    dgvAdd.DataSource = string.Empty;
-            //    if (ofd.ShowDialog() == DialogResult.OK)
-            //    {
-            //        var folder = ofd.SafeFileName.Split('.')[0];
-            //        Directory.CreateDirectory(folder);
-            //        SetEnableControls(false);
-            //        System.IO.Compression.ZipFile.ExtractToDirectory(ofd.FileName, folder, Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
-            //        Person.List = new List<Person>();
-            //        foreach (var file in Directory.GetFiles(folder, "*.txt"))
-            //        {
-            //            var t = file.Split(new char[] { '\\', '_' }, StringSplitOptions.RemoveEmptyEntries);
-            //            dtDate.Value = DateTime.Parse(t.Last().Replace(".txt", "").Trim());
-            //            await FileOperations.Read(file, t[5] == "1" ? 1 : 2, t[7].ToLower() == "въезд" ? 0 : 1);
-            //        }
-            //        Directory.Delete(folder, true);
-            //        CreateTable();
-            //        SetEnableControls(true);
-            //        tbNumber.Text = folder.Remove(folder.Length -1);
-            //        lNumber.Text = string.Format("Количество - {0}", dgvList.RowCount);
-            //    }
-            //}
+                            person = new Person
+                            {
+                                FIO = string.Join(" ", line.Substring(75).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)),
+                                DateExpire = DateTime.TryParse(line.Substring(29, 10), out DateTime dateExp) ? dateExp : DateTime.MinValue,
+                                Index = line.Substring(59, 1),
+
+                                DateOfBirth = DateTime.TryParse($"{d[0]}{d[1]}.{d[2]}{d[3]}.{(int.Parse($"{d[4]}{d[5]}") < 30 ? "20" : "19")}{d[4]}{d[5]}", out DateTime dateB) ? dateB : DateTime.MinValue,
+                                Sex = line.Substring(61, 1),
+                                Country = line.Substring(63, 4),
+                                Id = Person.List.Count + 1,
+                                Type = type,
+                                Route = route
+                            };
+                        }
+                        else
+                        {
+                            person.Task = line;
+                            var l = line.Split(new string[] { "" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                            var taskKey = l.FirstOrDefault(x => x.Contains("TaskKey"));
+                            var additionally = l.FirstOrDefault(x => x.Contains("Дополнительная информация:"));
+                            var placeOfBirth = l.FirstOrDefault(x => x.Contains("Место рождения:"));
+                            if (taskKey != null)
+                                person.TaskKey = taskKey.Split(new string[] { "TaskKey" }, StringSplitOptions.RemoveEmptyEntries)[0].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
+                            if (additionally != null)
+                                person.Additionally = additionally.Split(new string[] { "Дополнительная информация:" }, StringSplitOptions.RemoveEmptyEntries)[0].Replace("Дополнительная информация:", "");
+                            if (placeOfBirth != null)
+                                person.PlaceOfBirth = placeOfBirth.Split(new string[] { "Место рождения:" }, StringSplitOptions.RemoveEmptyEntries)[0].Replace("Место рождения:", "");
+                            Application.OpenForms[0].Invoke(new MethodInvoker(() => Person.List.Add(person)));
+                        }
+                        i++;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка загрузки списка ОУ:\n" + ex.Message);
+                    Logger.Writer(new SQLWriteSystemLogger(
+               new AttributeSystemLog()
+               {
+                   DateTimeCreate = DateTime.Now,
+                   LevelMessage = "Error",
+                   Message = "Ошибка загрузки списка ОУ: " + ex.Message
+               }));
+                }
+            });
+        }
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            _date = DateTime.Now;
+
+            using (OpenFileDialog ofd = new OpenFileDialog { Filter = "Архив | *.zip" })
+            {
+                dgvList.DataSource = string.Empty;
+                dgvAdd.DataSource = string.Empty;
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    var folder = ofd.SafeFileName.Split('.')[0];
+                    Directory.CreateDirectory(folder);
+                    SetEnableControls(false);
+                    System.IO.Compression.ZipFile.ExtractToDirectory(ofd.FileName, folder, Encoding.GetEncoding(System.Globalization.CultureInfo.CurrentCulture.TextInfo.OEMCodePage));
+                    Person.List = new List<Person>();
+                    foreach (var file in Directory.GetFiles(folder, "*.txt"))
+                    {
+                        var t = file.Split(new char[] { '\\', '_' }, StringSplitOptions.RemoveEmptyEntries);
+                        dtDate.Value = DateTime.Parse(t.Last().Replace(".txt", "").Trim());
+                        await Read(file, t[5] == "1" ? 1 : 2, t[7].ToLower() == "въезд" ? 0 : 1);
+                    }
+                    Directory.Delete(folder, true);
+                    CreateTableResult(Person.List.Where(x => x.Route == (rbIn.Checked ? 0 : 1) && x.Type == (rbAdd.Checked ? 2 : 1)).ToList());
+                    SetEnableControls(true);
+                    tbNumber.Text = folder.Remove(folder.Length - 1);
+                    lNumber.Text = string.Format("Количество - {0}", dgvList.RowCount);
+                }
+            }
 
         }
 

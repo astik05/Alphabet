@@ -15,37 +15,35 @@ namespace Alphabet.Service
         private Connection()
         {
             _connection = new SqlConnection();
+            SetStringConnection();
+            try
+            {
+                _connection.Open();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private static Connection _instance;
 
-        public static Connection Instance
-        {
-            get
-            {
-                _instance = new Connection();
+        public static Connection Instance => _instance ?? (_instance = new Connection());
 
-                SetStringConnection();
-                return _instance;
-            }
-}
 
-        private static void SetStringConnection()
+        private void SetStringConnection()
         {
-            if (_instance.GetConnection().State == ConnectionState.Closed)
-                _instance.GetConnection().ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
-                                StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True; Pooling = true";
+            _connection.ConnectionString = @"Server = " + StringConnection.Server + "; Initial catalog = AlphabetDB; Connection Timeout = " +
+                            StringConnection.ConnectionTimeout.ToString() + "; Integrated Security = True; Pooling = true;MultipleActiveResultSets=true";
         }
 
-        public SqlConnection GetConnection()
+        public SqlConnection GetConnection() 
         {
+           
             return _connection;
         }
 
         public void CloseConnection()
         {
-            if (_connection.State == ConnectionState.Open)
-                _connection.Close();
+            /*if (_connection.State == ConnectionState.Open)
+                _connection.Close();*/
         }
     }
 
@@ -71,22 +69,22 @@ namespace Alphabet.Service
                 _sqlCommand = connecting.CreateCommand();
 
                 CreateSqlCommand();
-
-                connecting.Open();
-                SqlDataReader reader = _sqlCommand.ExecuteReader();
-                for (int i = 0; i < reader.FieldCount; i++)
-                    _tableResult.Columns.Add(reader.GetName(i).ToString());
-                while (reader.Read())
+                using (SqlDataReader reader = _sqlCommand.ExecuteReader())
                 {
-                    string[] subItems = new string[reader.FieldCount];
-
                     for (int i = 0; i < reader.FieldCount; i++)
-                        subItems[i] = reader.GetValue(i).ToString();
+                        _tableResult.Columns.Add(reader.GetName(i).ToString());
+                    while (reader.Read())
+                    {
+                        string[] subItems = new string[reader.FieldCount];
 
-                    _tableResult.Rows.Add(subItems[0]);
-                    _tableResult.Rows[_tableResult.Rows.Count - 1].ItemArray = subItems;
-                }
-                connecting.Close();
+                        for (int i = 0; i < reader.FieldCount; i++)
+                            subItems[i] = reader.GetValue(i).ToString();
+
+                        _tableResult.Rows.Add(subItems[0]);
+                        _tableResult.Rows[_tableResult.Rows.Count - 1].ItemArray = subItems;
+                    }
+                } 
+                
             }
             catch (Exception exception)
             {
@@ -94,8 +92,6 @@ namespace Alphabet.Service
             }
             finally
             {
-                if (connecting.State == ConnectionState.Open)
-                    connecting.Close();
             }
         }
 
@@ -158,7 +154,7 @@ namespace Alphabet.Service
         public override void Execute()
         {
             var connecting = Connection.Instance.GetConnection();
-            connecting.Open();
+            //connecting.Open();
         }
     }
 
@@ -321,8 +317,8 @@ namespace Alphabet.Service
         {
             _sqlCommand.CommandType = CommandType.StoredProcedure;
             _sqlCommand.CommandText = "AddRecordToLog";
-            _sqlCommand.Parameters.Add("@Datetime", SqlDbType.DateTime2, 7);
-            _sqlCommand.Parameters[0].Value = _dateTimeCreate;
+            _sqlCommand.Parameters.Add("@Datetime", SqlDbType.VarChar, 32);
+            _sqlCommand.Parameters[0].Value = _dateTimeCreate.ToString("yyyyMMdd HH:mm:ss");
             _sqlCommand.Parameters.Add("@NameLogType", SqlDbType.VarChar, 128);
             _sqlCommand.Parameters[1].Value = _nameLogType;
             _sqlCommand.Parameters.Add("@Description", SqlDbType.VarChar);
@@ -356,8 +352,8 @@ namespace Alphabet.Service
 
         public ViewLogs(DateTime dateTimeCreate, DateTime datetimeFinish, string nameLogType, string description)
         {
-            _datetimeStart = dateTimeCreate.ToString("yyyy/MM/dd HH:mm:ss");
-            _datetimeFinish = datetimeFinish.ToString("yyyy/MM/dd HH:mm:ss");
+            _datetimeStart = dateTimeCreate.ToString("yyyyMMdd HH:mm:ss");
+            _datetimeFinish = datetimeFinish.ToString("yyyyMMdd HH:mm:ss");
             _nameLogType = nameLogType;
             _description = description;
         }
@@ -371,9 +367,9 @@ namespace Alphabet.Service
         {
             _sqlCommand.CommandType = CommandType.StoredProcedure;
             _sqlCommand.CommandText = "ViewLogs";
-            _sqlCommand.Parameters.Add("@DatetimeStart", SqlDbType.DateTime2, 7);
+            _sqlCommand.Parameters.Add("@DatetimeStart", SqlDbType.VarChar, 32);
             _sqlCommand.Parameters[0].Value = _datetimeStart;
-            _sqlCommand.Parameters.Add("@DatetimeFinish", SqlDbType.DateTime2, 7);
+            _sqlCommand.Parameters.Add("@DatetimeFinish", SqlDbType.VarChar, 32);
             _sqlCommand.Parameters[1].Value = _datetimeFinish;
             _sqlCommand.Parameters.Add("@NameLogType", SqlDbType.VarChar);
             if (string.IsNullOrWhiteSpace(_nameLogType))
@@ -415,8 +411,8 @@ namespace Alphabet.Service
         {
             _sqlCommand.CommandType = CommandType.StoredProcedure;
             _sqlCommand.CommandText = "InsertRecordUserAction";
-            _sqlCommand.Parameters.Add("@Datetime", SqlDbType.DateTime2, 7);
-            _sqlCommand.Parameters[0].Value = _dateTimeCreate;
+            _sqlCommand.Parameters.Add("@Datetime", SqlDbType.VarChar, 32);
+            _sqlCommand.Parameters[0].Value = _dateTimeCreate.ToString("yyyyMMdd HH:mm:ss");
             _sqlCommand.Parameters.Add("@LoginUser", SqlDbType.VarChar, 32);
             _sqlCommand.Parameters[1].Value = _loginUser;
             _sqlCommand.Parameters.Add("@NameUserActionType", SqlDbType.VarChar, 128);
@@ -438,8 +434,8 @@ namespace Alphabet.Service
 
         public ViewUserActions(DateTime dateTimeCreate, DateTime datetimeFinish, string loginUser, string nameUserActionType)
         {
-            _datetimeStart = dateTimeCreate.ToString("yyyy/MM/dd HH:mm:ss");
-            _datetimeFinish = datetimeFinish.ToString("yyyy/MM/dd HH:mm:ss");
+            _datetimeStart = dateTimeCreate.ToString("yyyyMMdd HH:mm:ss");
+            _datetimeFinish = datetimeFinish.ToString("yyyyMMdd HH:mm:ss");
             _loginUser = loginUser;
             _nameUserActionType = nameUserActionType;
         }
@@ -453,9 +449,9 @@ namespace Alphabet.Service
         {
             _sqlCommand.CommandType = CommandType.StoredProcedure;
             _sqlCommand.CommandText = "ViewUserActions";
-            _sqlCommand.Parameters.Add("@DatetimeStart", SqlDbType.DateTime2, 7);
+            _sqlCommand.Parameters.Add("@DatetimeStart", SqlDbType.VarChar, 32);
             _sqlCommand.Parameters[0].Value = _datetimeStart;
-            _sqlCommand.Parameters.Add("@DatetimeFinish", SqlDbType.DateTime2, 7);
+            _sqlCommand.Parameters.Add("@DatetimeFinish", SqlDbType.VarChar, 32);
             _sqlCommand.Parameters[1].Value = _datetimeFinish;
             _sqlCommand.Parameters.Add("@LoginUser", SqlDbType.VarChar, 32);
             if (string.IsNullOrWhiteSpace(_loginUser))
@@ -571,7 +567,7 @@ namespace Alphabet.Service
             _sqlCommand.Parameters.AddWithValue("@Route", _person.Route);
             _sqlCommand.Parameters.AddWithValue("@Additionally", _person.Additionally == null ? (object)DBNull.Value : _person.Additionally);
             _sqlCommand.Parameters.AddWithValue("@PlaceOfBirth", _person.PlaceOfBirth == null ? (object)DBNull.Value : _person.PlaceOfBirth);
-            _sqlCommand.Parameters.AddWithValue("@IdPerson", 0).Direction = ParameterDirection.Output;
+
         }
     }
 

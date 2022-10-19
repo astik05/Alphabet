@@ -73,7 +73,7 @@ namespace Alphabet.Presenter
             {
                 try
                 {
-                    if (_numberTelegram == 0)
+                    if (_numberTelegram < 0)
                     {
                         levelMessage = "Info";
                         message = "Введите номер телеграммы!";
@@ -98,7 +98,8 @@ namespace Alphabet.Presenter
                             else if (typeOperation == 1)
                                 DeregistrationPersons(list, ref levelMessage, ref message);
 
-                            _personsAddOrDeleteView.CreateTableResult(list);
+                            _personsAddOrDeleteView.SetEnableControls(true);
+                            _personsAddOrDeleteView.CreateTableResult(Person.List.Where(x => x.Route == borderRouting && x.Type == typeOperation).ToList());
                             _personsAddOrDeleteView.ShowMessageBox(message, "Результат", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
@@ -111,7 +112,6 @@ namespace Alphabet.Presenter
                 }
                 finally
                 {
-                    _personsAddOrDeleteView.SetEnableControls(true);
                     Logger.Writer(new SQLWriteSystemLogger(
                         new AttributeSystemLog()
                         {
@@ -135,6 +135,7 @@ namespace Alphabet.Presenter
             try
             {
                 int count = 0;
+                ((IProgressBarView)_personsAddOrDeleteView).SetMaximum(persons.Count);
                 foreach (Person item in persons)
                 {
                     var insertPerson = new InsertPerson(item, _numberTelegram);
@@ -144,8 +145,16 @@ namespace Alphabet.Presenter
                     {
                         Person.List.Remove(item);
                         ++count;
+                        Logger.Writer(new SQLWriteUserActionLogger(
+                new AttributeUserActionLog()
+                {
+                    DateTimeCreate = DateTime.Now,
+                    IdPerson = int.Parse(flagInserted),
+                    LoginUser = UserSessions.Instance.User.Login,
+                    NameUserActionType = "Постановка"
+                }));
                     }
-                    ((IProgressBarView)_personsAddOrDeleteView).SetValue(1);
+                    ((IProgressBarView)_personsAddOrDeleteView).SetValue(count);
                 }
                 levelMessage = "Info";
                 message = "Завершение операции постановки на учёт. Количество обработанных записей - " + count.ToString();
@@ -169,6 +178,7 @@ namespace Alphabet.Presenter
                 }));
             try
             {
+                ((IProgressBarView)_personsAddOrDeleteView).SetMaximum(persons.Count);
                 foreach (Person item in persons)
                 {
                     var comparePersons = new ComparePersons(item);
@@ -184,10 +194,23 @@ namespace Alphabet.Presenter
                         item.IsDeleted = true;
                         var changeStatePerson = new ChangeStatePerson(Convert.ToInt64(item.DT.Rows[0].ItemArray[0]), _numberTelegram);
                         changeStatePerson.Execute();
+                        Logger.Writer(new SQLWriteUserActionLogger(
+                new AttributeUserActionLog()
+                {
+                    DateTimeCreate = DateTime.Now, 
+                    IdPerson = item.Id,
+                    LoginUser = UserSessions.Instance.User.Login,
+                    NameUserActionType = "Снятие"
+                }));
                     }
                     ((IProgressBarView)_personsAddOrDeleteView).SetValue(1);
                 }
 
+
+                foreach (var item in persons.Where(x => x.IsDeleted))
+                {
+                    Person.List.Remove(item);
+                }
                 persons.RemoveAll(x => x.IsDeleted);
                 levelMessage = "Info";
                 var countPersonsNoDelete = persons.Where(x => !x.IsDeleted).Count();

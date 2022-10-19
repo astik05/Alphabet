@@ -74,7 +74,7 @@ namespace Alphabet.Presenter
                     permissionARMs.Execute();
 
                     List<ARM> arms = new List<ARM>();
-                    ViewPermissionARMs(arms , permissionARMs);
+                    ViewPermissionARMs(arms, permissionARMs);
 
                     UserSessions.Instance.IsOpen = true;
                     UserSessions.Instance.User = new User()
@@ -139,6 +139,7 @@ namespace Alphabet.Presenter
         {
             string levelMessage = "Info";
             string message = string.Empty;
+
             try
             {
                 await Task.Run(() =>

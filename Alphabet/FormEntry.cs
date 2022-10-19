@@ -97,7 +97,7 @@ namespace Alphabet
 
         private void FormEntry_Load(object sender, EventArgs e)
         {
-            StringConnection.Server = @"LAPTOP-KF2EC5FH\SQLEXPRESS";
+            StringConnection.Server = @"SRV-1";
             StringConnection.ConnectionTimeout = 5;
             LoadEventHandler.Invoke();
         }

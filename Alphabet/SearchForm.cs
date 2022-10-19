@@ -46,6 +46,7 @@ namespace Alphabet
             Invoke((MethodInvoker)(() =>
             {
                 dgvList.DataSource = findedPersons;
+              
             }));
         }
 
